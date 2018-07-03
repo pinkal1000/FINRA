@@ -11,6 +11,7 @@ PRE_REQUISITES :
 1. Any Java runtime, preferably Java 8 or above.
 2. Jackson open source Java Parser needs to be in the classpath for this source to compile.
 3. Need JUnit libraries too to test the client and see it working in your preferable IDE like eclipse or on the command line.
+4. Will need a web container most preferably tomcat, where we can run the JSP that was added.
 
 FURTHER PLANS :
 
