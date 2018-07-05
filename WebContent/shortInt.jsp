@@ -18,17 +18,38 @@ String symbolJSON = shortReader.getShortJSON();
 
 <!--    <p>Name : <input type="text" ng-model="name"></p> -->
 <!--  <h1><span ng-bind="name"></span></h1> -->
-  <H1>Stock Symbol : </H1>
+
+  <H1>Stock Symbol DropDown </H1>
   <select ng-model="symbolopt">
   
    <option ng-repeat="x in name"   value ="{{ x }}" >
    {{ x["Security Symbol"] }}</option>
    
   </select>
+  <H1>Values of selected Stock Symbol {{ symbolopt['Security Symbol'] }}</H1>
   <h1><span ng-bind="symbolopt"></span></h1>
+  
+  <H1>Auto Complete with DataList </H1>
+     <div>
+        <label>Stock Symbol</label>
+        <input type="text"  ng-model="tickersymbol" list="symbols" >
+     </div>
+  
+  
+  <datalist id="symbols">
+   <select ng-model="tickersymbol">
+  
+   <option ng-repeat="x in name"   value ="{{ x['Security Symbol'] }}" >
+   {{ x["Security Symbol"] }}</option>
+   
+  </select>
+  </datalist>
+
+
 </div>
-
-
+ 
+ 
+ 
 <script>
 var app = angular.module("autocomplete", []);
 
@@ -36,6 +57,8 @@ app.controller("autocompleteCtrl", function($scope) {
 	$scope.name = <%=symbolJSON%>;
 });
 
+	
+	
  
 </script>
 </body>
