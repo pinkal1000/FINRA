@@ -1,4 +1,5 @@
-package com.stocks.shortinterest;
+package com.finra.ShortData;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -11,8 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-
-import javax.jws.WebService;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -96,7 +95,34 @@ public class FinraShortInterestReader {
 		fs.close();
 		Thread.sleep(2000);
 	}
+	/**
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String getShortJSON() throws IOException
+	{
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+ 		//read json file data to String
+		byte[] jsonData = Files.readAllBytes(Paths.get("jsonData.json"));
+		
+		if (jsonData != null)
+			return new String(jsonData);
+		else
+			return null;
+		
+	}
 	
+//	public void insertToElasticSearch() throws IOException
+//	{
+//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+// 		//read json file data to String
+//		byte[] jsonData = Files.readAllBytes(Paths.get("jsonData.json"));
+//		String jsonString = new String(jsonData);
+//		new TransportClient()
+//        .addTransportAddress(new InetSocketTransportAddress("192.168.0.198",9300));
+//	}
+//	
 	/**
 	 * 
 	 * @return
@@ -139,4 +165,5 @@ public class FinraShortInterestReader {
         System.out.println(outputStream.toString());
 		return outputStream.toString();
 	}
+	
 }
