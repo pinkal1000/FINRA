@@ -94,13 +94,13 @@ public class FinraReaderDAO {
 	public String getSymbols() throws JsonParseException, IOException
 	{
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
- 		//read json file data to String
+ 		
 
 		
 		JsonFactory factory = new JsonFactory();
 		JsonParser  parser  = factory.createParser(jsonData.getBytes());
-	    JsonGenerator generator = factory.createGenerator(outputStream);
-	    generator.writeStartArray();
+	    	JsonGenerator generator = factory.createGenerator(outputStream);
+	    	generator.writeStartArray();
 		while (!parser.isClosed())
 		{
 			JsonToken jsonToken = parser.nextToken();
@@ -119,9 +119,9 @@ public class FinraReaderDAO {
 			
 		}
 		generator.writeEndArray();
-        generator.close();
-        outputStream.close();
-        System.out.println(outputStream.toString());
+        	generator.close();
+       	 	outputStream.close();
+        	System.out.println(outputStream.toString());
 		return outputStream.toString();
 	}
 
