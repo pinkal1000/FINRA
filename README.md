@@ -11,11 +11,14 @@ PRE_REQUISITES :
 1. Any Java runtime, preferably Java 8 or above.
 2. Jackson open source Java Parser needs to be in the classpath for this source to compile.
 3. Need JUnit libraries too to test the client and see it working in your preferable IDE like eclipse or on the command line.
-4. Will need a web container most preferably tomcat, where we can run the JSP that was added.
+
 
 FURTHER PLANS :
 
 The intent is to process this data with open source frameworks like elastic search.
+Create a Rich UI with this data.
+Collect this data and eventually persist it to a NOSQL DB, thats the reason to convert to JSON.
+Analyze all this data on a per stock basis to forecast future stock proce movements using a machine learning predictive model.
 A work in progress, Any feedback to improve would be greatly appreciated.
 
 AUTHOR / DEVELOPER :
