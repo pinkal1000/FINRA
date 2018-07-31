@@ -18,7 +18,7 @@ FURTHER PLANS :
 The intent is to process this data with open source frameworks like elastic search.
 Create a Rich UI with this data.
 Collect this data and eventually persist it to a NOSQL DB, thats the reason to convert to JSON.
-Analyze all this data on a per stock basis to forecast future stock proce movements using a machine learning predictive model.
+Analyze all this data on a per stock basis to forecast future stock price movements using a machine learning predictive model.
 A work in progress, Any feedback to improve would be greatly appreciated.
 
 AUTHOR / DEVELOPER :
