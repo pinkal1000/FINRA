@@ -8,7 +8,7 @@ The source code, reads the "|" delimited FINRA data and converts it to JSON.
 
 MILESTONES :
 
-1. Today the load of all the FINRA data from the site takes under 10 minutes with a multi threaded loader spawning near a 100 simultaneous threads. 
+1. Today the load of all the FINRA data from the site takes under 500 seconds with a multi threaded loader spawning near a 100 simultaneous threads. 
 2. It is a little over 700000 records read over http.
 
 PROJECT PHASE :
