@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -15,12 +17,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 public class FinraReaderDAO {
-  	
-    String jsonData = "";
     String fileURL;
+    LinkScrapper ls;
+    ConcurrentHashMap<String, String> dataMap = new ConcurrentHashMap<String, String>();
     public FinraReaderDAO(String url)
     {
     	fileURL = url;
+    	ls = new LinkScrapper(fileURL);
+    	
     }
 	/**
 	 *  
@@ -29,62 +33,59 @@ public class FinraReaderDAO {
 	 */
 	public String readShortData() throws IOException, InterruptedException
 	{
-		
-		URL shortDataURL = new URL( fileURL);
-        BufferedReader fs = new BufferedReader(
-        new InputStreamReader(shortDataURL.openStream()));
-		
-		String s  = fs.readLine();
-		ArrayList<String> fields = new ArrayList<String>();
-		
-		StringTokenizer st  = new StringTokenizer(s,"|");
-		while (st.hasMoreTokens())
+		ArrayList<String> links = ls.processLinks();
+		ThreadManager tm = new ThreadManager();
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < links.size(); i++)
 		{
-			fields.add(st.nextToken());
+			System.out.println("loading link " + links.get(i));
+			LoaderThread lt = new LoaderThread();
+			Thread loader = new Thread(lt);
+			tm.addThread(lt);
+			lt.setLink(links.get(i));
+			loader.start();
 		}
-		for (int i = 0; i < fields.size(); i++) {
-			System.out.println(fields.get(i));
-		}
-
-
-		String shortDataJSON = "[";
-		while ((s = fs.readLine()) != null)
+		for (int i = 0; i < tm.getThreads().size(); i++)
 		{
-			jsonData += shortDataJSON;
-			shortDataJSON = "";
-			st  = new StringTokenizer(s,"|");
-			int j = 0;
-			while (st.hasMoreTokens())
+			while(!tm.getThreads().get(i).isDone())
 			{
-
-				if (j == 0)
-					shortDataJSON = shortDataJSON.concat("{");
-				if (j < 3)
-					shortDataJSON = shortDataJSON.concat("\"" + fields.get(j) + "\": \"" + st.nextToken() + "\",");
-				if (j > 2 && j < 8) // numeric data
-				{	
-					String data = st.nextToken();
-					if (data.startsWith("."))
-						data = "0" + data;
-					if (data.startsWith("-."))
-						data = data.replace("-", "-0");
-					shortDataJSON = shortDataJSON.concat("\"" + fields.get(j) + "\": " + data + ",");
-				}
-				if (j == 8)
-					shortDataJSON = shortDataJSON.concat("\"" + fields.get(j) + "\": " + st.nextToken() + "},");
-				j++;
+				Thread.sleep(500);
+				continue;
 			}
+			tm.removeThread(tm.getThreads().get(i));
+			System.out.println("threads remaining : " + tm.getThreads().size());
 			
 		}
-		int jsonDataSize = shortDataJSON.length();
-		shortDataJSON = shortDataJSON.substring(0, jsonDataSize - 1 );
-		shortDataJSON = shortDataJSON.concat("]");
-		
-		jsonData += shortDataJSON;
-		fs.close();
-		return jsonData;
+		long timeTaken = System.currentTimeMillis() - startTime;
+		dataMap = LoaderThread.getDataMap();
+		return "the time taken in ms to complete this load is " + timeTaken;
 	}
 	
+	class ThreadManager 
+	{
+		ArrayList<LoaderThread> threads = new ArrayList<LoaderThread>();
+		void addThread(LoaderThread lt)
+		{
+			threads.add(lt);
+//			try {
+//			Thread.sleep(10);
+//			}
+//			catch(InterruptedException ie)
+//			{}
+		}
+		ArrayList<LoaderThread> getThreads()
+		{
+			return threads;
+		}
+		void removeThread(LoaderThread lt)
+		{
+			threads.remove(lt);
+		}
+	}
+
+
+	
+   
 	/**
 	 * 
 	 * @return
@@ -93,25 +94,26 @@ public class FinraReaderDAO {
 	 */
 	public String getSymbols() throws JsonParseException, IOException
 	{
+		Enumeration<String> keys = this.dataMap.keys();
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
- 		
-
-		
+		// just need one data set to get unique symbols
+		if(keys.hasMoreElements())
+		{
 		JsonFactory factory = new JsonFactory();
-		JsonParser  parser  = factory.createParser(jsonData.getBytes());
-	    	JsonGenerator generator = factory.createGenerator(outputStream);
-	    	generator.writeStartArray();
+		JsonParser  parser  = factory.createParser(dataMap.get(keys.nextElement()).getBytes());
+	    JsonGenerator generator = factory.createGenerator(outputStream);
+	    generator.writeStartArray();
 		while (!parser.isClosed())
 		{
 			JsonToken jsonToken = parser.nextToken();
 			String fieldName = parser.getCurrentName();
 			String value = parser.getValueAsString();
-			if (fieldName != null && fieldName.equalsIgnoreCase("Security Symbol"))
+			if (fieldName != null && fieldName.equalsIgnoreCase("SecuritySymbol"))
 			{
 				if (value != null ) {
-					if (!value.equalsIgnoreCase("Security Symbol")) {
+					if (!value.equalsIgnoreCase("SecuritySymbol")) {
 						generator.writeStartObject();
-						generator.writeObjectField("Security Symbol", value);
+						generator.writeObjectField("SecuritySymbol", value);
 						generator.writeEndObject();
 					}
 				}
@@ -119,10 +121,10 @@ public class FinraReaderDAO {
 			
 		}
 		generator.writeEndArray();
-        	generator.close();
-       	 	outputStream.close();
-        	System.out.println(outputStream.toString());
+        generator.close();
+        outputStream.close();
+//        System.out.println(outputStream.toString());
+		}
 		return outputStream.toString();
 	}
-
 }

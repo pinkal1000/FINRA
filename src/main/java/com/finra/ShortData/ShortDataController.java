@@ -22,7 +22,7 @@ public class ShortDataController {
     }
 	
    @RequestMapping(value = {"/json"}, method = RequestMethod.GET)
-   public String printQuote(@RequestParam("symbol") String symbol)  {
+   public String load()  {
 	   String s = "";
 	   try
 	   {
@@ -34,5 +34,11 @@ public class ShortDataController {
 		   exc.printStackTrace();
 	   }
       return s;
+   }
+   @RequestMapping(value= {"/quote"}, method = RequestMethod.GET)
+   public String getQuote(@RequestParam("symbol") String symbol)
+   {
+	   //to do for rich UI.
+	   return "";
    }
 }

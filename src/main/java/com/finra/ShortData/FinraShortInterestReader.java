@@ -14,7 +14,7 @@ public class FinraShortInterestReader implements FinraReader{
 	public FinraShortInterestReader(AppConfig app)
 	{
 		this.app = app;
-		dao = new FinraReaderDAO(app.getShortURLFile());
+		dao = new FinraReaderDAO(app.getShortURL());
 	}
 	/**
 	 * 
@@ -24,22 +24,9 @@ public class FinraShortInterestReader implements FinraReader{
 	 */
 	public String getShortJSON() throws IOException, InterruptedException 
 	{
-		
-		
-		
 		return dao.readShortData();
 	}
 	
-//	public void insertToElasticSearch() throws IOException
-//	{
-//		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-// 		//read json file data to String
-//		byte[] jsonData = Files.readAllBytes(Paths.get("jsonData.json"));
-//		String jsonString = new String(jsonData);
-//		new TransportClient()
-//        .addTransportAddress(new InetSocketTransportAddress("192.168.0.198",9300));
-//	}
-//	
 	/**
 	 * 
 	 * @return
